@@ -1,9 +1,10 @@
+import 'regenerator-runtime/runtime'
 import * as math from 'mathjs'
 
 const canvas = document.querySelector('canvas')
 
-const HEIGHT = 400
-const WIDTH = (window.innerWidth / window.innerHeight) * HEIGHT
+const HEIGHT = window.innerHeight / 10
+const WIDTH = Math.ceil((window.innerWidth / window.innerHeight) * HEIGHT)
 
 canvas.width = WIDTH
 canvas.height = HEIGHT
@@ -27,26 +28,38 @@ function mandelbrot(c) {
   return n
 }
 
-const RE_START = -2
-const RE_END = 1
 const IM_START = -1
 const IM_END = 1
 
-for (let x = 0; x <= WIDTH; x++) {
-  for (let y = 0; y <= HEIGHT; y++) {
-    const c = math.complex(
-      RE_START + (x / WIDTH) * (RE_END - RE_START),
-      IM_START + (y / HEIGHT) * (IM_END - IM_START)
-    )
+const RE_START = -0.5 - ((WIDTH / HEIGHT) * (IM_END - IM_START)) / 2
+const RE_END = -0.5 + ((WIDTH / HEIGHT) * (IM_END - IM_START)) / 2
 
-    const m = mandelbrot(c)
+const render = (x, y) => {
+  const c = math.complex(
+    RE_START + (x / WIDTH) * (RE_END - RE_START),
+    IM_START + (y / HEIGHT) * (IM_END - IM_START)
+  )
 
-    const color = (255 - (m * 255) / MAX_ITER) | 0
-    // const color = (Math.random() * 255) | 0
+  const m = mandelbrot(c)
 
-    ctx.fillStyle = `rgb(${color}, ${color}, ${color})`
-    ctx.fillRect(x, y, 1, 1)
+  const color = (255 - (m * 255) / MAX_ITER) | 0
+  // const color = (Math.random() * 255) | 0
+  const hue = ((255 * m) / MAX_ITER) | 0
+  const sat = 255
+  const l = m < MAX_ITER ? 50 : 0
 
-    // console.log(color)
-  }
+  ctx.fillStyle = `hsl(${hue}, ${sat}%, ${l}%)`
+  ctx.fillRect(x, y, 1, 1)
 }
+
+const step = (x = 0, y = 0) => {
+  if (x === WIDTH && y === HEIGHT) return
+  render(x, y)
+  x++
+  if (x >= WIDTH) {
+    x = 0
+    y++
+  }
+  requestAnimationFrame(() => step(x, y))
+}
+step()
