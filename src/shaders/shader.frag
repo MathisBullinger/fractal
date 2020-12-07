@@ -10,6 +10,8 @@ vec2 multiply(vec2 a, vec2 b) {
 uniform int iterations;
 uniform float width;
 uniform float height;
+uniform float scale;
+uniform vec2 center;
 
 int mandelbrot(vec2 c) {
   vec2 z = vec2(0.0, 0.0);
@@ -29,10 +31,7 @@ void main() {
   vec2 uv = gl_FragCoord.xy / vec2(height);
   uv.x -= (width - height) / height / 2.0;
 
-  vec2 center = vec2(-0.5, 0.0);
-  float zoomSize = 3.3;
-
-  vec2 c = center + (uv * 4.0 - vec2(2.0)) * (zoomSize / 4.0);
+  vec2 c = center + (uv * 4.0 - vec2(2.0)) * (scale / 4.0);
 
   int m = mandelbrot(c);
 

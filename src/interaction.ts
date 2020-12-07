@@ -1,5 +1,6 @@
 const canvas = document.querySelector('canvas')
 const select = document.getElementById('selection')
+const controls = document.getElementById('controls')
 
 canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
   select.removeAttribute('hidden')
@@ -37,4 +38,17 @@ function handleMove(e: PointerEvent) {
   select.style.transform = `translateX(-${width / 2}px) translateY(-${
     height / 2
   }px)`
+}
+
+type ResizeCB = (dir: 'in' | 'out') => void
+const resize: ResizeCB[] = []
+export function onResize(cb: ResizeCB) {
+  resize.push(cb)
+}
+
+document.getElementById('zoom-in').onclick = () => {
+  resize.forEach((cb) => cb('in'))
+}
+document.getElementById('zoom-out').onclick = () => {
+  resize.forEach((cb) => cb('out'))
 }

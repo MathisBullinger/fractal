@@ -43,6 +43,11 @@ gl.useProgram(program)
 const iterHandle = gl.getUniformLocation(program, 'iterations')
 gl.uniform1i(iterHandle, 80)
 
+const scaleHandle = gl.getUniformLocation(program, 'scale')
+
+const centerHandle = gl.getUniformLocation(program, 'center')
+gl.uniform2fv(centerHandle, [-0.5, 0.0])
+
 function resize() {
   canvas.width = window.innerWidth * devicePixelRatio
   canvas.height = window.innerHeight * devicePixelRatio
@@ -58,9 +63,11 @@ function clear() {
   gl.clear(gl.COLOR_BUFFER_BIT)
 }
 
-export default function render() {
+export default function render(scale = 2.3) {
   resize()
   clear()
+
+  gl.uniform1f(scaleHandle, scale)
 
   const positionLocation = gl.getAttribLocation(program, 'a_position')
   gl.enableVertexAttribArray(positionLocation)
