@@ -40,6 +40,9 @@ gl.attachShader(program, fragmentShader)
 gl.linkProgram(program)
 gl.useProgram(program)
 
+const iterHandle = gl.getUniformLocation(program, 'iterations')
+gl.uniform1i(iterHandle, 80)
+
 function resize() {
   canvas.width = window.innerWidth * devicePixelRatio
   canvas.height = window.innerHeight * devicePixelRatio

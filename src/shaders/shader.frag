@@ -7,13 +7,16 @@ vec2 multiply(vec2 a, vec2 b) {
   );
 }
 
-int maxIter = 80;
+uniform int iterations;
+uniform float width;
+uniform float height;
 
 int mandelbrot(vec2 c) {
   vec2 z = vec2(0.0, 0.0);
   int n;
   
   for (int i = 0; i < 10000; i++) {
+    if (i > iterations) break;
     n = i;
     z = multiply(z, z) + c;
     if (length(z) > 2.0) break;
@@ -21,9 +24,6 @@ int mandelbrot(vec2 c) {
   
   return n;
 }
-
-uniform float width;
-uniform float height;
 
 void main() {
   vec2 uv = gl_FragCoord.xy / vec2(height);
@@ -36,5 +36,5 @@ void main() {
 
   int m = mandelbrot(c);
 
-  gl_FragColor = m <= maxIter ? vec4(vec3(float(m) / float(maxIter)), 1.0) : vec4(vec3(0.0), 1.0);
+  gl_FragColor = m < iterations ? vec4(vec3(float(m) / float(iterations)), 1.0) : vec4(vec3(0.0), 1.0);
 }

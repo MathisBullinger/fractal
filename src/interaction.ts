@@ -7,6 +7,7 @@ canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
   select.style.top = `${clientY}px`
   select.style.width = '0'
   select.style.height = '0'
+  select.style.transform = ''
   window.addEventListener('pointermove', handleMove)
 })
 
@@ -28,6 +29,12 @@ function handleMove(e: PointerEvent) {
     pt[0] = (pt[1] - box.top) * (1 / ratio) + box.left
   }
 
-  select.style.width = `${pt[0] - box.left}px`
-  select.style.height = `${pt[1] - box.top}px`
+  const width = pt[0] - box.left
+  const height = pt[1] - box.top
+
+  select.style.width = `${width}px`
+  select.style.height = `${height}px`
+  select.style.transform = `translateX(-${width / 2}px) translateY(-${
+    height / 2
+  }px)`
 }
