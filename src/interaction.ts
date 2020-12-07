@@ -1,31 +1,19 @@
 const canvas = document.querySelector('canvas')
 const selectRect = document.getElementById('selection')
 const colorShift = document.getElementById('color-shift') as HTMLInputElement
+const iterations = document.getElementById('iterations') as HTMLInputElement
 
-type ResizeCB = (dir: 'in' | 'out') => void
-const resize: ResizeCB[] = []
-export function onResize(cb: ResizeCB) {
-  resize.push(cb)
-}
-type PanCB = (dir: 'left' | 'right' | 'up' | 'down') => void
-const pan: PanCB[] = []
-export function onPan(cb: PanCB) {
-  pan.push(cb)
-}
-type SelectCB = (
-  scale: number,
-  center: [x: number, y: number],
-  stick?: boolean
-) => void
-const select: SelectCB[] = []
-export function onSelect(cb: SelectCB) {
-  select.push(cb)
-}
-type ShiftCB = (v: number) => void
-const clShiftHandles: ShiftCB[] = []
-export function onColorShift(cb: ShiftCB) {
-  clShiftHandles.push(cb)
-}
+export const handlers: {
+  onResize?(dir: 'in' | 'out'): void
+  onPan?(dir: 'left' | 'right' | 'up' | 'down'): void
+  onSelect?(
+    scale: number,
+    center: [x: number, y: number],
+    stick?: boolean
+  ): void
+  onColorShift?(v: number): void
+  onIterations?(v: number): void
+} = {}
 
 canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
   selectRect.removeAttribute('hidden')
@@ -38,13 +26,11 @@ canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
 })
 
 canvas.addEventListener('pointerup', () => {
-  select.forEach((cb) => {
-    const { left, top, width, height } = selectRect.getBoundingClientRect()
-    cb(height / window.innerHeight, [
-      (left + width / 2) / window.innerWidth,
-      (top + height / 2) / window.innerHeight,
-    ])
-  })
+  const { left, top, width, height } = selectRect.getBoundingClientRect()
+  handlers.onSelect?.(height / window.innerHeight, [
+    (left + width / 2) / window.innerWidth,
+    (top + height / 2) / window.innerHeight,
+  ])
   selectRect.setAttribute('hidden', '')
   window.removeEventListener('pointermove', handleMove)
 })
@@ -73,29 +59,31 @@ function handleMove(e: PointerEvent) {
 }
 
 document.getElementById('zoom-in').onclick = () => {
-  resize.forEach((cb) => cb('in'))
+  handlers.onResize?.('in')
 }
 document.getElementById('zoom-out').onclick = () => {
-  resize.forEach((cb) => cb('out'))
+  handlers.onResize?.('out')
 }
 ;['left', 'right', 'up', 'down'].forEach((dir) => {
   document.getElementById(`pan-${dir}`).onclick = () => {
-    pan.forEach((cb) => cb(dir as any))
+    handlers.onPan?.(dir as any)
   }
 })
 
 canvas.addEventListener('mousewheel', ({ deltaY, x, y }: any) => {
-  select.forEach((cb) => {
-    cb(
-      1 + 0.005 * deltaY,
-      [x / window.innerWidth, y / window.innerHeight],
-      true
-    )
-  })
+  handlers.onSelect?.(
+    1 + 0.005 * deltaY,
+    [x / window.innerWidth, y / window.innerHeight],
+    true
+  )
 })
 
 colorShift.oninput = ({ target }) => {
-  clShiftHandles.forEach((cb) =>
-    cb(parseFloat((target as HTMLInputElement).value))
-  )
+  handlers.onColorShift?.(parseFloat((target as HTMLInputElement).value))
+}
+
+iterations.oninput = ({ target }) => {
+  const value = parseFloat((target as HTMLInputElement).value)
+  const exp = Math.max(Math.round(value ** 2 / 1000), 2)
+  handlers.onIterations?.(exp)
 }
