@@ -1,25 +1,48 @@
 const canvas = document.querySelector('canvas')
-const select = document.getElementById('selection')
+const selectRect = document.getElementById('selection')
 const controls = document.getElementById('controls')
 
+type ResizeCB = (dir: 'in' | 'out') => void
+const resize: ResizeCB[] = []
+export function onResize(cb: ResizeCB) {
+  resize.push(cb)
+}
+type PanCB = (dir: 'left' | 'right' | 'up' | 'down') => void
+const pan: PanCB[] = []
+export function onPan(cb: PanCB) {
+  pan.push(cb)
+}
+type SelectCB = (scale: number, center: [x: number, y: number]) => void
+const select: SelectCB[] = []
+export function onSelect(cb: SelectCB) {
+  select.push(cb)
+}
+
 canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
-  select.removeAttribute('hidden')
-  select.style.left = `${clientX}px`
-  select.style.top = `${clientY}px`
-  select.style.width = '0'
-  select.style.height = '0'
-  select.style.transform = ''
+  selectRect.removeAttribute('hidden')
+  selectRect.style.left = `${clientX}px`
+  selectRect.style.top = `${clientY}px`
+  selectRect.style.width = '0'
+  selectRect.style.height = '0'
+  selectRect.style.transform = ''
   window.addEventListener('pointermove', handleMove)
 })
 
 canvas.addEventListener('pointerup', () => {
-  select.setAttribute('hidden', '')
+  select.forEach((cb) => {
+    const { left, top, width, height } = selectRect.getBoundingClientRect()
+    cb(height / window.innerHeight, [
+      (left + width / 2) / window.innerWidth,
+      (top + height / 2) / window.innerHeight,
+    ])
+  })
+  selectRect.setAttribute('hidden', '')
   window.removeEventListener('pointermove', handleMove)
 })
 
 function handleMove(e: PointerEvent) {
   const ratio = canvas.height / canvas.width
-  const box = select.getBoundingClientRect()
+  const box = selectRect.getBoundingClientRect()
 
   const pt = [e.clientX, e.clientY]
   const ptRatio = (pt[1] - box.top) / (pt[0] - box.left)
@@ -33,22 +56,11 @@ function handleMove(e: PointerEvent) {
   const width = pt[0] - box.left
   const height = pt[1] - box.top
 
-  select.style.width = `${width}px`
-  select.style.height = `${height}px`
-  select.style.transform = `translateX(-${width / 2}px) translateY(-${
+  selectRect.style.width = `${width}px`
+  selectRect.style.height = `${height}px`
+  selectRect.style.transform = `translateX(-${width / 2}px) translateY(-${
     height / 2
   }px)`
-}
-
-type ResizeCB = (dir: 'in' | 'out') => void
-const resize: ResizeCB[] = []
-export function onResize(cb: ResizeCB) {
-  resize.push(cb)
-}
-type PanCB = (dir: 'left' | 'right' | 'up' | 'down') => void
-const pan: PanCB[] = []
-export function onPan(cb: PanCB) {
-  pan.push(cb)
 }
 
 document.getElementById('zoom-in').onclick = () => {

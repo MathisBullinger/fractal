@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime'
 import _render from './render'
 import throttle from 'lodash/throttle'
-import { onResize, onPan } from './interaction'
+import { onResize, onPan, onSelect } from './interaction'
 
 let scale = 2.3
 const pan = [-0.5, 0.0]
@@ -18,7 +18,6 @@ onResize((dir) => {
   if (dir === 'in') scale *= 0.9
   else scale *= 1.1
   render()
-  console.log(scale)
 })
 
 onPan((dir) => {
@@ -27,5 +26,12 @@ onPan((dir) => {
   else if (dir === 'left') pan[0] -= off
   else if (dir === 'up') pan[1] += off
   else if (dir === 'down') pan[1] -= off
+  render()
+})
+
+onSelect((ds, [x, y]) => {
+  pan[0] += (x - 0.5) * scale * (window.innerWidth / window.innerHeight)
+  pan[1] -= (y - 0.5) * scale
+  scale *= ds
   render()
 })
