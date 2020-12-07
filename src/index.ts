@@ -29,9 +29,13 @@ onPan((dir) => {
   render()
 })
 
-onSelect((ds, [x, y]) => {
-  pan[0] += (x - 0.5) * scale * (window.innerWidth / window.innerHeight)
-  pan[1] -= (y - 0.5) * scale
+onSelect((ds, [x, y], stick = false) => {
+  if (!stick) {
+    pan[0] += (x - 0.5) * scale * (window.innerWidth / window.innerHeight)
+    pan[1] -= (y - 0.5) * scale
+  } else {
+    // pan[0] += (x - 0.5) * scale * (window.innerWidth / window.innerHeight)
+  }
   scale *= ds
   render()
 })

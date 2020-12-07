@@ -12,7 +12,11 @@ const pan: PanCB[] = []
 export function onPan(cb: PanCB) {
   pan.push(cb)
 }
-type SelectCB = (scale: number, center: [x: number, y: number]) => void
+type SelectCB = (
+  scale: number,
+  center: [x: number, y: number],
+  stick?: boolean
+) => void
 const select: SelectCB[] = []
 export function onSelect(cb: SelectCB) {
   select.push(cb)
@@ -73,4 +77,14 @@ document.getElementById('zoom-out').onclick = () => {
   document.getElementById(`pan-${dir}`).onclick = () => {
     pan.forEach((cb) => cb(dir as any))
   }
+})
+
+canvas.addEventListener('mousewheel', ({ deltaY, x, y }: any) => {
+  select.forEach((cb) => {
+    cb(
+      1 + 0.005 * deltaY,
+      [x / window.innerWidth, y / window.innerHeight],
+      true
+    )
+  })
 })
