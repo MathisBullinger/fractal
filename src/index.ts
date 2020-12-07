@@ -1,12 +1,13 @@
 import 'regenerator-runtime/runtime'
 import _render from './render'
 import throttle from 'lodash/throttle'
-import { onResize, onPan, onSelect } from './interaction'
+import { onResize, onPan, onSelect, onColorShift } from './interaction'
 
 let scale = 2.3
 const pan = [-0.5, 0.0]
+let colorShift = 0.0
 
-const render = () => _render(scale, pan)
+const render = () => _render(scale, pan, colorShift)
 render()
 
 window.addEventListener(
@@ -37,5 +38,10 @@ onSelect((ds, [x, y], stick = false) => {
     // pan[0] += (x - 0.5) * scale * (window.innerWidth / window.innerHeight)
   }
   scale *= ds
+  render()
+})
+
+onColorShift((v) => {
+  colorShift = v
   render()
 })

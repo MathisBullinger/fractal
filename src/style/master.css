@@ -26,6 +26,22 @@ canvas {
   position: fixed;
   bottom: 3rem;
   left: 3rem;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 7rem;
+}
+
+#controls > div {
+  width: 100%;
+}
+
+#controls > div:last-of-type {
+  height: 5rem;
+  position: relative;
+}
+
+#controls > div > input {
+  width: 100%;
 }
 
 #controls button {
@@ -38,6 +54,8 @@ canvas {
   appearance: none;
   border: none;
   transform-origin: center;
+  left: 50%;
+  top: 50%;
 }
 
 #controls button:focus {
@@ -47,22 +65,22 @@ canvas {
 #controls #zoom-in {
   height: 0.7rem;
   line-height: 0.7rem;
-  transform: translateY(calc(-0.5rem - 5% + 0.3rem));
+  transform: translateX(-50%) translateY(calc(-0.5rem - 5% + 0.3rem - 0.5rem));
 }
 #controls #zoom-out {
   height: 0.7rem;
   line-height: 0.7rem;
-  transform: translateY(calc(0.5rem + 5%));
+  transform: translateX(-50%) translateY(calc(0.5rem + 5% - 0.5rem));
 }
 #pan-right {
-  transform: translateX(120%);
+  transform: translateX(70%) translateY(-50%);
 }
 #pan-left {
-  transform: translateX(-120%);
+  transform: translateX(-170%) translateY(-50%);
 }
 #pan-up {
-  transform: translateY(-140%);
+  transform: translateX(-50%) translateY(-190%);
 }
 #pan-down {
-  transform: translateY(140%);
+  transform: translateX(-50%) translateY(90%);
 }

@@ -12,6 +12,7 @@ uniform float width;
 uniform float height;
 uniform float scale;
 uniform vec2 center;
+uniform float colorShift;
 
 int mandelbrot(vec2 c) {
   vec2 z = vec2(0.0, 0.0);
@@ -66,5 +67,5 @@ void main() {
 
   int m = mandelbrot(c);
 
-  gl_FragColor = m < iterations ? vec4(palette(float(m) / float(iterations), 0.0), 1.0) : vec4(vec3(0.0), 1.0);
+  gl_FragColor = m < iterations ? vec4(palette(float(m) / float(iterations), colorShift), 1.0) : vec4(vec3(0.0), 1.0);
 }

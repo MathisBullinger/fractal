@@ -41,11 +41,11 @@ gl.linkProgram(program)
 gl.useProgram(program)
 
 const iterHandle = gl.getUniformLocation(program, 'iterations')
-gl.uniform1i(iterHandle, 100)
-
 const scaleHandle = gl.getUniformLocation(program, 'scale')
-
 const centerHandle = gl.getUniformLocation(program, 'center')
+const shiftHandle = gl.getUniformLocation(program, 'colorShift')
+
+gl.uniform1i(iterHandle, 100)
 
 function resize() {
   canvas.width = window.innerWidth * devicePixelRatio
@@ -62,12 +62,17 @@ function clear() {
   gl.clear(gl.COLOR_BUFFER_BIT)
 }
 
-export default function render(scale = 2.3, center = [-0.5, 0.0]) {
+export default function render(
+  scale = 2.3,
+  center = [-0.5, 0.0],
+  colorShift = 0.0
+) {
   resize()
   clear()
 
   gl.uniform1f(scaleHandle, scale)
   gl.uniform2fv(centerHandle, center)
+  gl.uniform1f(shiftHandle, colorShift)
 
   const positionLocation = gl.getAttribLocation(program, 'a_position')
   gl.enableVertexAttribArray(positionLocation)

@@ -1,6 +1,6 @@
 const canvas = document.querySelector('canvas')
 const selectRect = document.getElementById('selection')
-const controls = document.getElementById('controls')
+const colorShift = document.getElementById('color-shift') as HTMLInputElement
 
 type ResizeCB = (dir: 'in' | 'out') => void
 const resize: ResizeCB[] = []
@@ -20,6 +20,11 @@ type SelectCB = (
 const select: SelectCB[] = []
 export function onSelect(cb: SelectCB) {
   select.push(cb)
+}
+type ShiftCB = (v: number) => void
+const clShiftHandles: ShiftCB[] = []
+export function onColorShift(cb: ShiftCB) {
+  clShiftHandles.push(cb)
 }
 
 canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
@@ -88,3 +93,9 @@ canvas.addEventListener('mousewheel', ({ deltaY, x, y }: any) => {
     )
   })
 })
+
+colorShift.oninput = ({ target }) => {
+  clShiftHandles.forEach((cb) =>
+    cb(parseFloat((target as HTMLInputElement).value))
+  )
+}
