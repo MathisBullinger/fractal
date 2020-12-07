@@ -29,8 +29,8 @@ void main() {
   vec2 uv = gl_FragCoord.xy / vec2(height);
   uv.x -= (width - height) / height / 2.0;
 
-  vec2 center = vec2(-0.8, 0.0);
-  float zoomSize = 2.3;
+  vec2 center = vec2(-0.5, 0.0);
+  float zoomSize = 3.3;
 
   vec2 c = center + (uv * 4.0 - vec2(2.0)) * (zoomSize / 4.0);
 
