@@ -85,5 +85,6 @@ colorShift.oninput = ({ target }) => {
 iterations.oninput = ({ target }) => {
   const value = parseFloat((target as HTMLInputElement).value)
   const exp = Math.max(Math.round(value ** 2 / 1000), 2)
+  iterations.labels[0].firstElementChild.innerHTML = exp.toString()
   handlers.onIterations?.(exp)
 }
