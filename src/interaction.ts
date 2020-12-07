@@ -45,6 +45,11 @@ const resize: ResizeCB[] = []
 export function onResize(cb: ResizeCB) {
   resize.push(cb)
 }
+type PanCB = (dir: 'left' | 'right' | 'up' | 'down') => void
+const pan: PanCB[] = []
+export function onPan(cb: PanCB) {
+  pan.push(cb)
+}
 
 document.getElementById('zoom-in').onclick = () => {
   resize.forEach((cb) => cb('in'))
@@ -52,3 +57,8 @@ document.getElementById('zoom-in').onclick = () => {
 document.getElementById('zoom-out').onclick = () => {
   resize.forEach((cb) => cb('out'))
 }
+;['left', 'right', 'up', 'down'].forEach((dir) => {
+  document.getElementById(`pan-${dir}`).onclick = () => {
+    pan.forEach((cb) => cb(dir as any))
+  }
+})

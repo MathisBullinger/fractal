@@ -24,6 +24,45 @@ canvas {
 
 #controls {
   position: fixed;
-  bottom: 1rem;
-  left: 1rem;
+  bottom: 3rem;
+  left: 3rem;
+}
+
+#controls button {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+  padding: 0;
+  position: absolute;
+  appearance: none;
+  border: none;
+  transform-origin: center;
+}
+
+#controls button:focus {
+  outline: none;
+}
+
+#controls #zoom-in {
+  height: 0.7rem;
+  line-height: 0.7rem;
+  transform: translateY(calc(-0.5rem - 5% + 0.3rem));
+}
+#controls #zoom-out {
+  height: 0.7rem;
+  line-height: 0.7rem;
+  transform: translateY(calc(0.5rem + 5%));
+}
+#pan-right {
+  transform: translateX(120%);
+}
+#pan-left {
+  transform: translateX(-120%);
+}
+#pan-up {
+  transform: translateY(-140%);
+}
+#pan-down {
+  transform: translateY(140%);
 }
