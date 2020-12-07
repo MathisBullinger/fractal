@@ -36,5 +36,5 @@ void main() {
 
   int m = mandelbrot(c);
 
-  gl_FragColor = vec4(float(m) / float(maxIter), 0.0, 0.0, 1.0);
+  gl_FragColor = m <= maxIter ? vec4(vec3(float(m) / float(maxIter)), 1.0) : vec4(vec3(0.0), 1.0);
 }
