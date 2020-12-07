@@ -1,6 +1,7 @@
 import 'regenerator-runtime/runtime'
 import render from './render'
 import throttle from 'lodash/throttle'
+import './interaction'
 
 render()
 

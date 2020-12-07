@@ -5,26 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fractal</title>
     <script src="src/index.ts" defer></script>
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        overscroll-behavior: none;
-        touch-action: none;
-      }
-
-      canvas {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        image-rendering: pixelated;
-      }
-    </style>
+    <link rel="stylesheet" href="src/style/master.css" />
   </head>
   <body>
-    <canvas />
+    <canvas></canvas>
+    <div id="selection" hidden></div>
   </body>
 </html>
