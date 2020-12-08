@@ -13,6 +13,7 @@ export const handlers: {
   ): void
   onColorShift?(v: number): void
   onIterations?(v: number): void
+  onToggleUI?(v?: boolean): void
 } = {}
 
 canvas.addEventListener('pointerdown', ({ clientX, clientY }) => {
@@ -87,4 +88,13 @@ iterations.oninput = ({ target }) => {
   const exp = Math.max(Math.round(value ** 2 / 1000), 2)
   iterations.labels[0].firstElementChild.innerHTML = exp.toString()
   handlers.onIterations?.(exp)
+}
+
+window.addEventListener('keypress', ({ key }) => {
+  if (key !== 'u') return
+  handlers.onToggleUI()
+})
+
+document.getElementById('hide-ui').onclick = () => {
+  handlers.onToggleUI(false)
 }

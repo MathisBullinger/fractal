@@ -44,7 +44,7 @@ canvas {
   width: 100%;
 }
 
-#controls button {
+#controls > div:last-of-type > button {
   display: block;
   width: 1rem;
   height: 1rem;
@@ -90,4 +90,8 @@ canvas {
   right: 0.5rem;
   bottom: 0.5rem;
   font-size: 14px;
+}
+
+body[data-ui='hidden'] *:not(canvas) {
+  display: none;
 }

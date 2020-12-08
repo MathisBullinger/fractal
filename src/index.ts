@@ -27,6 +27,7 @@ let iterations = 100
   const iter = document.querySelector<HTMLInputElement>('#iterations')
   iter.value = Math.round(10 * Math.sqrt(10) * Math.sqrt(iterations)).toString()
   iter.labels[0].firstElementChild.innerHTML = i
+  if (params.get('ui') === 'hidden') document.body.dataset.ui = 'hidden'
 }
 
 const render = () => _render(scale, pan, colorShift, iterations)
@@ -77,6 +78,12 @@ handlers.onIterations = (v) => {
   pushState()
 }
 
+handlers.onToggleUI = (v = document.body.dataset.ui === 'hidden') => {
+  if (v) delete document.body.dataset.ui
+  else document.body.dataset.ui = 'hidden'
+  pushState()
+}
+
 type Complex = [real: number, imaginary: number]
 
 const coords = document.getElementById('coords')
@@ -100,8 +107,10 @@ const pushState = debounce(
     if (colorShift > 0) params.set('h', colorShift.toString())
     else params.delete('h')
     params.set('i', iterations.toString())
+    if (document.body.dataset.ui === 'hidden') params.set('ui', 'hidden')
+    else params.delete('ui')
     history.pushState({}, '', `${location.pathname}?${params.toString()}`)
   },
-  500,
+  200,
   { leading: false, trailing: true }
 )
