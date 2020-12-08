@@ -13,14 +13,20 @@ let iterations = 100
   const params = new URLSearchParams(location.search)
   const c: string = params.get('c')
   const s: string = params.get('s')
+  const h: string = params.get('h')
+  const i: string = params.get('i')
   if (c) {
     pan = decodeURIComponent(c)
       .split(/(?=[+\-])/)
       .map((v) => parseFloat(v.replace(/[^\d]$/, ''))) as Complex
   }
-  if (s) {
-    scale = parseFloat(s)
-  }
+  if (s) scale = parseFloat(s)
+  if (h) colorShift = parseFloat(h)
+  if (i) iterations = parseInt(i)
+  document.querySelector<HTMLInputElement>('#color-shift').value = h
+  const iter = document.querySelector<HTMLInputElement>('#iterations')
+  iter.value = Math.round(10 * Math.sqrt(10) * Math.sqrt(iterations)).toString()
+  iter.labels[0].firstElementChild.innerHTML = i
 }
 
 const render = () => _render(scale, pan, colorShift, iterations)
@@ -62,11 +68,13 @@ handlers.onSelect = (ds, [x, y], stick = false) => {
 handlers.onColorShift = (v) => {
   colorShift = v
   render()
+  pushState()
 }
 
 handlers.onIterations = (v) => {
   iterations = v
   render()
+  pushState()
 }
 
 type Complex = [real: number, imaginary: number]
@@ -89,6 +97,9 @@ const pushState = debounce(
     const params = new URLSearchParams(location.search)
     params.set('c', `${pan[0]}+${pan[1]}i`.replace(/\+\-/, '-'))
     params.set('s', scale.toExponential())
+    if (colorShift > 0) params.set('h', colorShift.toString())
+    else params.delete('h')
+    params.set('i', iterations.toString())
     history.pushState({}, '', `${location.pathname}?${params.toString()}`)
   },
   500,
