@@ -84,3 +84,10 @@ canvas {
 #pan-down {
   transform: translateX(-50%) translateY(90%);
 }
+
+#coords {
+  position: fixed;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  font-size: 14px;
+}

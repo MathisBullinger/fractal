@@ -2,11 +2,26 @@ import 'regenerator-runtime/runtime'
 import _render from './render'
 import throttle from 'lodash/throttle'
 import { handlers } from './interaction'
+import debounce from 'lodash/debounce'
 
 let scale = 2.3
-const pan = [-0.5, 0.0]
-let colorShift = 0.0
+let pan: Complex = [-0.5, 0.0]
+let colorShift = 0.55
 let iterations = 100
+
+{
+  const params = new URLSearchParams(location.search)
+  const c: string = params.get('c')
+  const s: string = params.get('s')
+  if (c) {
+    pan = decodeURIComponent(c)
+      .split(/(?=[+\-])/)
+      .map((v) => parseFloat(v.replace(/[^\d]$/, ''))) as Complex
+  }
+  if (s) {
+    scale = parseFloat(s)
+  }
+}
 
 const render = () => _render(scale, pan, colorShift, iterations)
 render()
@@ -29,6 +44,7 @@ handlers.onPan = (dir) => {
   else if (dir === 'up') pan[1] += off
   else if (dir === 'down') pan[1] -= off
   render()
+  pushState()
 }
 
 handlers.onSelect = (ds, [x, y], stick = false) => {
@@ -40,6 +56,7 @@ handlers.onSelect = (ds, [x, y], stick = false) => {
   }
   scale *= ds
   render()
+  pushState()
 }
 
 handlers.onColorShift = (v) => {
@@ -51,3 +68,29 @@ handlers.onIterations = (v) => {
   iterations = v
   render()
 }
+
+type Complex = [real: number, imaginary: number]
+
+const coords = document.getElementById('coords')
+window.addEventListener('mousemove', ({ clientX: x, clientY: y }) => {
+  const im =
+    -((y - window.innerHeight / 2) / window.innerHeight) * scale + pan[1]
+  const re =
+    ((x - window.innerWidth / 2) / window.innerWidth) *
+      (scale * (window.innerWidth / window.innerHeight)) +
+    pan[0]
+  coords.innerHTML = `${re.toPrecision(6)}\u2009+\u2009${im.toPrecision(
+    6
+  )}\u2009𝑖`
+})
+
+const pushState = debounce(
+  () => {
+    const params = new URLSearchParams(location.search)
+    params.set('c', `${pan[0]}+${pan[1]}i`.replace(/\+\-/, '-'))
+    params.set('s', scale.toExponential())
+    history.pushState({}, '', `${location.pathname}?${params.toString()}`)
+  },
+  500,
+  { leading: false, trailing: true }
+)
