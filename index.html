@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fractal</title>
-    <script src="src/index.ts" defer></script>
-    <link rel="stylesheet" href="src/style/master.css" />
+    <style>
+      @import './src/style/master.css';
+    </style>
   </head>
   <body>
     <canvas></canvas>
@@ -46,5 +47,8 @@
       </div>
     </div>
     <span id="coords"></span>
+    <script type="module">
+      import './src/index.ts'
+    </script>
   </body>
 </html>
