@@ -3,14 +3,17 @@ import * as debug from './debug'
 
 export default abstract class GLClass {
   constructor(private readonly className: string) {
-    this.bind(this)(this.prefixFn)
+    this.bind(this)(this.prefixFn, this.typeName, this.typeId, this.formatList)
   }
 
   private prefixFn =
     <T extends (..._: any[]) => any>(fn: T) =>
     (method: string): ReturnType<T> =>
-      ((...args: any[]) =>
-        fn(`[${this.className}${method ? `.${method}` : ''}]`)(...args)) as any
+      ((...args: any[]) => fn(this.prefix(method))(...args)) as any
+
+  protected prefix(method?: string) {
+    return `[${this.className}${method ? `.${method}` : ''}]:`
+  }
 
   protected log = this.prefixFn(
     (prefix: string) =>
@@ -34,7 +37,9 @@ export default abstract class GLClass {
       methods.forEach((method) => method.bind(context))
     }
 
-  protected typeName = debug.glTypename
+  protected typeName = debug.gl.typeName
+  protected typeId = debug.gl.typeId
+  protected isTypeName = debug.gl.isTypeName
 
   protected formatList(values: unknown[], type: 'and' | 'or' = 'or') {
     return new Intl.ListFormat(undefined, {

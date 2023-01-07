@@ -1,9 +1,17 @@
+import type { GL } from './types'
+
+const GLContext = WebGLRenderingContext
+
 const glContextLookup: Record<GLenum, string> = Object.fromEntries(
-  Object.entries(WebGLRenderingContext).map(([k, v]) => [v, k])
+  Object.entries(GLContext).map(([k, v]) => [v, k])
 )
 
-export const glTypename = (type: GLenum) =>
-  glContextLookup[type] ?? `unknown (${type})`
+export const gl = {
+  typeName: (typeId: GLenum) => glContextLookup[typeId] as GL.TypeName,
+  typeId: (typeName: GL.TypeName) => (GLContext as any)[typeName] as GLenum,
+  isTypeName: (type: GLenum | GL.TypeName): type is GL.TypeName =>
+    typeof (GLContext as any)[type] === 'number',
+}
 
 export const indent = (text: string, spaces = 2) =>
   text

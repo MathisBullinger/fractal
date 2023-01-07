@@ -1,23 +1,30 @@
 import GLClass from './glBaseClass'
-import * as debug from './debug'
+import Uniform from './uniform'
 import oneOf from 'froebel/oneOf'
 import pipe from 'froebel/pipe'
 import type { Fn } from 'froebel/types'
 import type { GL, FnWrapper } from './types'
 
-export default class ShaderProgram extends GLClass {
+export default class ShaderProgram<T extends UniformsDef = {}> extends GLClass {
   private glProgram: WebGLProgram
+  private uniforms: UniformMap<T> = {}
 
-  constructor(public readonly gl: GL.Context) {
+  constructor(
+    public readonly gl: GL.Context,
+    private readonly uniformTypes: T
+  ) {
     super('Program')
     const assert = this.assert('constructor')
     this.glProgram = assert(gl.createProgram(), 'failed to create program')
   }
 
-  public static from(canvas: HTMLCanvasElement): ShaderProgram {
+  public static from<U extends UniformsDef>(
+    canvas: HTMLCanvasElement,
+    uniforms: U
+  ): ShaderProgram<U> {
     const context = canvas.getContext('webgl')
     if (!context) throw Error(`failed to create webgl context`)
-    return new ShaderProgram(context)
+    return new ShaderProgram(context, uniforms)
   }
 
   public attachShader(shaderType: GLenum, sourceCode: string) {
@@ -27,8 +34,8 @@ export default class ShaderProgram extends GLClass {
     assert(
       oneOf(shaderType, ...validTypes),
       `shaderType must be either ${this.formatList(
-        validTypes.map(debug.glTypename)
-      )} but was ${debug.glTypename(shaderType)}`
+        validTypes.map(this.typeName)
+      )} but was ${this.typeName(shaderType)}`
     )
     assert(
       !this.isShaderAttached(shaderType),
@@ -46,10 +53,20 @@ export default class ShaderProgram extends GLClass {
     this.gl.attachShader(this.glProgram, shader)
   }
 
+  public getUniform<U extends keyof T>(name: U): Uniform<T[U]> {
+    const assert = this.assert('getUniform')
+    const type = assert(this.uniformTypes[name])
+    return (this.uniforms[name] ??= new Uniform(this, name as string, type))
+  }
+
   private isShaderAttached = (shaderType: GLenum) =>
     this.getAttachedShaders()
       .map((shader) => this.gl.getShaderParameter(shader, this.gl.SHADER_TYPE))
       .includes(shaderType)
+
+  public get activeUniformCount(): number {
+    return this.getProgramParameter(this.gl.ACTIVE_UNIFORMS) ?? 0
+  }
 
   private bindProgram: BindProgram = (name) => {
     const instrument = (glc: Fn): BPInstrument<any, any> =>
@@ -89,3 +106,6 @@ type BoundProgramCall<
 > = GL.CallDef<C> extends (program: WebGLProgram, ...args: infer A) => infer RP
   ? (...args: A) => [RN] extends [never] ? RP : RN
   : never
+
+type UniformsDef = Record<string, GL.TypeName>
+type UniformMap<T extends UniformsDef> = { [K in keyof T]?: Uniform<T[K]> }

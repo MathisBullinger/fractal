@@ -2,12 +2,18 @@ import type { Fn } from 'froebel/types'
 
 export namespace GL {
   export type Context = WebGLRenderingContext
+  export type TypeName = Extract<
+    PickKeys<Context, number>,
+    BaseType | `${BaseType}_${string}`
+  >
+
   export type Call = PickKeys<Context, Fn>
   export type ProgramCall = CallAccepting<WebGLProgram>
   export type CallDef<T extends Call> = Context[T]
   export type Args<T extends Call> = Parameters<Context[T]>
 
   type CallAccepting<T> = PickKeys<Context, Fn<[T, ...any[]]>>
+  type BaseType = 'BOOL' | 'INT' | 'FLOAT'
 }
 
 export type PickKeys<T, P> = {
