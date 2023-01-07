@@ -11,6 +11,6 @@
     "parcel": "^2.8.2"
   },
   "dependencies": {
-    "froebel": "^0.23.0"
+    "froebel": "^0.23.1"
   }
 }
