@@ -1,8 +1,8 @@
 import 'regenerator-runtime/runtime'
 import _render from './render'
-import throttle from 'lodash/throttle'
+import throttle from 'froebel/throttle'
 import { handlers } from './interaction'
-import debounce from 'lodash/debounce'
+import debounce from 'froebel/debounce'
 
 let scale = 2.3
 let pan: Complex = [-0.5, 0.0]
@@ -11,10 +11,10 @@ let iterations = 100
 
 {
   const params = new URLSearchParams(location.search)
-  const c: string = params.get('c')
-  const s: string = params.get('s')
-  const h: string = params.get('h')
-  const i: string = params.get('i')
+  const c = params.get('c')
+  const s = params.get('s')
+  const h = params.get('h')
+  const i = params.get('i')
   if (c) {
     pan = decodeURIComponent(c)
       .split(/(?=[+\-])/)
@@ -23,10 +23,10 @@ let iterations = 100
   if (s) scale = parseFloat(s)
   if (h) colorShift = parseFloat(h)
   if (i) iterations = parseInt(i)
-  document.querySelector<HTMLInputElement>('#color-shift').value = h
-  const iter = document.querySelector<HTMLInputElement>('#iterations')
+  if (h) document.querySelector<HTMLInputElement>('#color-shift')!.value = h
+  const iter = document.querySelector<HTMLInputElement>('#iterations')!
   iter.value = Math.round(10 * Math.sqrt(10) * Math.sqrt(iterations)).toString()
-  iter.labels[0].firstElementChild.innerHTML = i
+  if (i) iter.labels![0].firstElementChild!.innerHTML = i
   if (params.get('ui') === 'hidden') document.body.dataset.ui = 'hidden'
 }
 
@@ -86,7 +86,7 @@ handlers.onToggleUI = (v = document.body.dataset.ui === 'hidden') => {
 
 type Complex = [real: number, imaginary: number]
 
-const coords = document.getElementById('coords')
+const coords = document.getElementById('coords')!
 window.addEventListener('mousemove', ({ clientX: x, clientY: y }) => {
   const im =
     -((y - window.innerHeight / 2) / window.innerHeight) * scale + pan[1]
@@ -99,18 +99,14 @@ window.addEventListener('mousemove', ({ clientX: x, clientY: y }) => {
   )}\u2009𝑖`
 })
 
-const pushState = debounce(
-  () => {
-    const params = new URLSearchParams(location.search)
-    params.set('c', `${pan[0]}+${pan[1]}i`.replace(/\+\-/, '-'))
-    params.set('s', scale.toExponential())
-    if (colorShift > 0) params.set('h', colorShift.toString())
-    else params.delete('h')
-    params.set('i', iterations.toString())
-    if (document.body.dataset.ui === 'hidden') params.set('ui', 'hidden')
-    else params.delete('ui')
-    history.pushState({}, '', `${location.pathname}?${params.toString()}`)
-  },
-  200,
-  { leading: false, trailing: true }
-)
+const pushState = debounce(() => {
+  const params = new URLSearchParams(location.search)
+  params.set('c', `${pan[0]}+${pan[1]}i`.replace(/\+\-/, '-'))
+  params.set('s', scale.toExponential())
+  if (colorShift > 0) params.set('h', colorShift.toString())
+  else params.delete('h')
+  params.set('i', iterations.toString())
+  if (document.body.dataset.ui === 'hidden') params.set('ui', 'hidden')
+  else params.delete('ui')
+  history.pushState({}, '', `${location.pathname}?${params.toString()}`)
+}, 200)

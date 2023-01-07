@@ -1,40 +1,29 @@
 import vertShader from './shaders/shader.vert'
 import fragShader from './shaders/shader.frag'
 
-const canvas: HTMLCanvasElement = document.querySelector('canvas')
+const canvas = document.querySelector<HTMLCanvasElement>('canvas')!
 
-const gl = canvas.getContext('webgl')
+const gl = canvas.getContext('webgl')!
 
 const buffer = gl.createBuffer()
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
 gl.bufferData(
   gl.ARRAY_BUFFER,
   new Float32Array([
-    -1.0,
-    -1.0,
-    1.0,
-    -1.0,
-    -1.0,
-    1.0,
-    -1.0,
-    1.0,
-    1.0,
-    -1.0,
-    1.0,
-    1.0,
+    -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
   ]),
   gl.STATIC_DRAW
 )
 
-const vertexShader = gl.createShader(gl.VERTEX_SHADER)
+const vertexShader = gl.createShader(gl.VERTEX_SHADER)!
 gl.shaderSource(vertexShader, vertShader)
 gl.compileShader(vertexShader)
 
-const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
+const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)!
 gl.shaderSource(fragmentShader, fragShader)
 gl.compileShader(fragmentShader)
 
-const program = gl.createProgram()
+const program = gl.createProgram()!
 gl.attachShader(program, vertexShader)
 gl.attachShader(program, fragmentShader)
 gl.linkProgram(program)

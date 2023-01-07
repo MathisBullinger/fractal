@@ -1,7 +1,7 @@
-const canvas = document.querySelector('canvas')
-const selectRect = document.getElementById('selection')
-const colorShift = document.getElementById('color-shift') as HTMLInputElement
-const iterations = document.getElementById('iterations') as HTMLInputElement
+const canvas = document.querySelector('canvas')!
+const selectRect = document.getElementById('selection')!
+const colorShift = document.getElementById('color-shift')! as HTMLInputElement
+const iterations = document.getElementById('iterations')! as HTMLInputElement
 
 export const handlers: {
   onResize?(dir: 'in' | 'out'): void
@@ -59,14 +59,14 @@ function handleMove(e: PointerEvent) {
   }px)`
 }
 
-document.getElementById('zoom-in').onclick = () => {
+document.getElementById('zoom-in')!.onclick = () => {
   handlers.onResize?.('in')
 }
-document.getElementById('zoom-out').onclick = () => {
+document.getElementById('zoom-out')!.onclick = () => {
   handlers.onResize?.('out')
 }
 ;['left', 'right', 'up', 'down'].forEach((dir) => {
-  document.getElementById(`pan-${dir}`).onclick = () => {
+  document.getElementById(`pan-${dir}`)!.onclick = () => {
     handlers.onPan?.(dir as any)
   }
 })
@@ -86,15 +86,15 @@ colorShift.oninput = ({ target }) => {
 iterations.oninput = ({ target }) => {
   const value = parseFloat((target as HTMLInputElement).value)
   const exp = Math.max(Math.round(value ** 2 / 1000), 2)
-  iterations.labels[0].firstElementChild.innerHTML = exp.toString()
+  iterations.labels![0].firstElementChild!.innerHTML = exp.toString()
   handlers.onIterations?.(exp)
 }
 
 window.addEventListener('keypress', ({ key }) => {
   if (key !== 'u') return
-  handlers.onToggleUI()
+  handlers.onToggleUI?.()
 })
 
-document.getElementById('hide-ui').onclick = () => {
-  handlers.onToggleUI(false)
+document.getElementById('hide-ui')!.onclick = () => {
+  handlers.onToggleUI?.(false)
 }
