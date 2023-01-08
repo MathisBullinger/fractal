@@ -8,7 +8,7 @@ export default abstract class GLClass {
 
   private prefixFn =
     <T extends (..._: any[]) => any>(fn: T) =>
-    (method: string): ReturnType<T> =>
+    (method?: string): ReturnType<T> =>
       ((...args: any[]) => fn(this.prefix(method))(...args)) as any
 
   protected prefix(method?: string) {
@@ -36,6 +36,11 @@ export default abstract class GLClass {
     (...methods: Fn[]) => {
       methods.forEach((method) => method.bind(context))
     }
+
+  protected defineIf =
+    <C extends boolean>(condition: C) =>
+    <F>(method: F): true extends C ? F : never =>
+      (condition ? method : undefined) as any
 
   protected typeName = debug.gl.typeName
   protected typeId = debug.gl.typeId

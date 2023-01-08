@@ -5,8 +5,10 @@ import pipe from 'froebel/pipe'
 import type { Fn } from 'froebel/types'
 import type { GL, FnWrapper } from './types'
 
-export default class ShaderProgram<T extends UniformsDef = {}> extends GLClass {
-  private glProgram: WebGLProgram
+export default class ShaderProgram<
+  T extends UniformsDef = any
+> extends GLClass {
+  public readonly glProgram: WebGLProgram
   private uniforms: UniformMap<T> = {}
 
   constructor(
@@ -55,7 +57,7 @@ export default class ShaderProgram<T extends UniformsDef = {}> extends GLClass {
 
   public getUniform<U extends keyof T>(name: U): Uniform<T[U]> {
     const assert = this.assert('getUniform')
-    const type = assert(this.uniformTypes[name])
+    const type: T[U] = assert(this.uniformTypes[name])
     return (this.uniforms[name] ??= new Uniform(this, name as string, type))
   }
 
@@ -83,6 +85,7 @@ export default class ShaderProgram<T extends UniformsDef = {}> extends GLClass {
   public getProgramParameter = this.bindProgram('getProgramParameter')
   public getActiveUniform = this.bindProgram('getActiveUniform')
   public link = this.bindProgram('linkProgram')
+  public use = this.bindProgram('useProgram')
   private getAttachedShaders = this.bindProgram('getAttachedShaders').return(
     (v) => v ?? []
   )

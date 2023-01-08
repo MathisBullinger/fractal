@@ -1,16 +1,16 @@
 import GLClass from './glBaseClass'
+import oneOf from 'froebel/oneOf'
 import type ShaderProgram from './program'
-import type { GL } from './types'
+import type { GL, Primitive } from './types'
+import type { Length } from 'froebel/types'
 
-export default class Uniform<
-  T extends GL.TypeName = GL.TypeName
-> extends GLClass {
+export default class Uniform<T extends GL.TypeName> extends GLClass {
   private readonly handle: WebGLUniformLocation
 
   constructor(
     private readonly program: ShaderProgram,
     private readonly name: string,
-    type?: T
+    public readonly type: T
   ) {
     super(`Uniform{${name}}`)
     const assert = this.assert('constructor')
@@ -20,20 +20,30 @@ export default class Uniform<
       `couldn't get location for uniform "${name}"`
     )
 
-    if (type) this.assertType(this.typeId(type))
-  }
-
-  public assertType(type: GLenum | GL.TypeName) {
-    const typeId = this.isTypeName(type) ? this.typeId(type) : type
-    this.assert('assertType')(
-      this.info.type === typeId,
-      `expected type ${this.typeName(typeId)} but got ${this.type}`
+    assert(
+      (this.info.type === this.typeId(this.type),
+      `expected type ${this.type} but got ${this.typeName(this.info.type)}`)
     )
   }
 
-  private _type?: GL.TypeName
-  public get type() {
-    return (this._type ??= this.typeName(this.info.type))
+  public set(...args: SetArgs<T>) {
+    this.log('set')(...args)
+    this.glSetter(this.handle, ...(args as any[]))
+  }
+
+  public get glSetter() {
+    const assert = this.assert('glSetter')
+    const [, type, dimensions] = assert(
+      this.type.match(/^([A-Z]+)(?:_VEC([0-9]))?$/)
+    )
+    assert(oneOf(type, 'BOOL', 'INT', 'FLOAT'))
+    const callName = `uniform${dimensions ?? 1}${
+      type === 'FLOAT' ? 'f' : 'i'
+    }` as GL.SetUniformCall
+    assert(callName in this.program.gl)
+    return this.program.gl[callName].bind(this.program.gl) as SetUniformSig<
+      GL.GetSetUniform<T>
+    >
   }
 
   private get info() {
@@ -43,4 +53,47 @@ export default class Uniform<
         .find((info) => info?.name === this.name)
     )
   }
+
+  private static createTypeMap = <T extends Record<GL.BaseType, any>>(
+    map: T
+  ): T => map
+
+  private static baseTypeMap = Uniform.createTypeMap({
+    BOOL: Boolean,
+    INT: Number,
+    FLOAT: Number,
+  })
 }
+
+type FromGlTypeName<T extends GL.TypeName> = BuildType<
+  FromGlBaseType<GL.GetBaseType<T>>,
+  T
+>
+
+type BuildType<T, G extends GL.TypeName> = G extends GL.BaseType
+  ? T
+  : G extends `${GL.BaseType}_VEC${infer D}`
+  ? VecType<T, D>
+  : never
+
+type VecType<T, D extends string, V extends T[] = []> = `${Length<V>}` extends D
+  ? V
+  : VecType<T, D, [...V, T]>
+
+type FromGlBaseType<T extends GL.BaseType> =
+  T extends keyof typeof Uniform['baseTypeMap']
+    ? Primitive<typeof Uniform['baseTypeMap'][T]>
+    : never
+
+type SetArgs<T extends GL.TypeName> = Parameters<
+  GL.Context[GL.GetSetUniform<T>]
+> extends [any, ...infer R]
+  ? R
+  : never
+
+type SetUniformSig<T extends GL.SetUniformCall> = GL.Context[T] extends (
+  uniform: infer U,
+  ...data: any[]
+) => infer R
+  ? (uniform: U, ...data: any[]) => R
+  : never
