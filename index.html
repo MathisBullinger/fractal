@@ -10,45 +10,19 @@
   </head>
   <body>
     <canvas></canvas>
-    <div id="selection" hidden></div>
-    <div id="controls">
-      <div>
-        <button id="hide-ui">hide UI</button>
-      </div>
-      <div>
-        <label for="iterations">iterations: <span>100</span></label>
-        <input
-          id="iterations"
-          type="range"
-          min="2"
-          max="1000"
-          step="1"
-          value="317"
-        />
-      </div>
-      <div>
-        <label for="color-shift">HSL hue shift</label>
-        <input
-          id="color-shift"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value="0.55"
-        />
-      </div>
-      <div>
-        <button id="zoom-in">+</button>
-        <button id="zoom-out">-</button>
-        <button id="pan-left">&#x25C4;</button>
-        <button id="pan-right">&#x25BA;</button>
-        <button id="pan-up">&#x25B2;</button>
-        <button id="pan-down">&#x25BC;</button>
-      </div>
+    <div class="controls">
+      <label class="iterations">
+        <span></span>
+        <input type="range" min="2" max="1000" step="1" />
+      </label>
+      <label class="hue">
+        <span></span>
+        <input type="range" min="0" max="1" step="0.01" />
+      </label>
     </div>
-    <span id="coords"></span>
+    <span class="coords"></span>
     <script type="module">
-      import './src/index.ts'
+      import './src/main.ts'
     </script>
   </body>
 </html>

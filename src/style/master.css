@@ -16,82 +16,28 @@ canvas {
   cursor: crosshair;
 }
 
-#selection {
-  position: absolute;
-  border: 1px dashed red;
-  pointer-events: none;
-}
-
-#controls {
-  position: fixed;
-  bottom: 3rem;
-  left: 3rem;
-  display: flex;
-  flex-direction: column-reverse;
-  width: 7rem;
-}
-
-#controls > div {
-  width: 100%;
-}
-
-#controls > div:last-of-type {
-  height: 5rem;
-  position: relative;
-}
-
-#controls > div > input {
-  width: 100%;
-}
-
-#controls > div:last-of-type > button {
-  display: block;
-  width: 1rem;
-  height: 1rem;
-  line-height: 1rem;
-  padding: 0;
-  position: absolute;
-  appearance: none;
-  border: none;
-  transform-origin: center;
-  left: 50%;
-  top: 50%;
-}
-
-#controls button:focus {
-  outline: none;
-}
-
-#controls #zoom-in {
-  height: 0.7rem;
-  line-height: 0.7rem;
-  transform: translateX(-50%) translateY(calc(-0.5rem - 5% + 0.3rem - 0.5rem));
-}
-#controls #zoom-out {
-  height: 0.7rem;
-  line-height: 0.7rem;
-  transform: translateX(-50%) translateY(calc(0.5rem + 5% - 0.5rem));
-}
-#pan-right {
-  transform: translateX(70%) translateY(-50%);
-}
-#pan-left {
-  transform: translateX(-170%) translateY(-50%);
-}
-#pan-up {
-  transform: translateX(-50%) translateY(-190%);
-}
-#pan-down {
-  transform: translateX(-50%) translateY(90%);
-}
-
-#coords {
-  position: fixed;
-  right: 0.5rem;
-  bottom: 0.5rem;
-  font-size: 14px;
-}
-
 body[data-ui='hidden'] *:not(canvas) {
   display: none;
+}
+
+.controls {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transform: scale(0.8);
+}
+
+.controls > * {
+  display: flex;
+  flex-direction: column;
+}
+
+.coords {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  font-size: 12px;
 }

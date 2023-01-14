@@ -11,6 +11,7 @@
     "parcel": "^2.8.2"
   },
   "dependencies": {
-    "froebel": "^0.23.1"
+    "froebel": "^0.23.1",
+    "typegl": "^0.1.0"
   }
 }
